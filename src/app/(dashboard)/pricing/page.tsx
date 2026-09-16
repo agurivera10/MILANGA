@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import { PricingCalculator } from '@/components/pricing/pricing-calculator'
 
 export const dynamic = 'force-dynamic'
@@ -29,7 +29,7 @@ type ProductWithRecipe = {
 }
 
 export default async function PricingPage() {
-  const { data: rawProducts } = await supabase
+  const { data: rawProducts } = await (await createClient())
     .from('products')
     .select(`
       id,

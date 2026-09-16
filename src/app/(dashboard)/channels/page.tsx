@@ -1,11 +1,11 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Plus, Store } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ChannelsPage() {
-  const { data: channels } = await supabase
+  const { data: channels } = await (await createClient())
     .from('sales_channels')
     .select('*')
     .order('name')

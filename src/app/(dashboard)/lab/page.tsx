@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import { ScenarioSimulator } from '@/components/lab/scenario-simulator'
 
 export const dynamic = 'force-dynamic'
@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export default async function LabPage() {
   // Para el laboratorio, traemos una receta "hero" (la principal) o la primera disponible para simular.
   // En la V0.1, traemos todas las materias primas para jugar con sus precios.
-  const { data: materials } = await supabase
+  const { data: materials } = await (await createClient())
     .from('materials')
     .select('id, name, current_price, presentation_quantity, expected_yield, base_unit, presentation_unit')
     .eq('active', true)

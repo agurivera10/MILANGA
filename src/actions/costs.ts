@@ -1,6 +1,6 @@
 'use server'
 
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
@@ -20,7 +20,11 @@ export async function createFixedCost(formData: FormData): Promise<void> {
     redirect('/costs?error=invalid-fixed')
   }
 
-  const business_id = '00000000-0000-0000-0000-000000000000'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const business_id = user.id
 
   const { error } = await supabase
     .from('fixed_costs')
@@ -50,7 +54,11 @@ export async function createVariableCost(formData: FormData): Promise<void> {
     redirect('/costs?error=invalid-variable')
   }
 
-  const business_id = '00000000-0000-0000-0000-000000000000'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const business_id = user.id
 
   const { error } = await supabase
     .from('variable_costs')

@@ -1,6 +1,6 @@
 'use server'
 
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
@@ -26,16 +26,15 @@ export async function createRecipe(data: z.infer<typeof recipeSchema>) {
     return { error: 'Datos inválidos', details: parsed.error.format() }
   }
 
-  // TODO: Obtener auth
-  const business_id = '00000000-0000-0000-0000-000000000000'
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autorizado' }
 
-  // Calcular expected_yield_factor = final_weight / sum(items.quantity)
-  // Nota: Esto asume que todas las quantities de los items están en la misma unidad base (ej. kg) que el final_weight.
-  // En un sistema real más avanzado, habría conversión de unidades.
+  const business_id = user.id
+
   const totalInputWeight = parsed.data.items.reduce((sum, item) => sum + item.quantity, 0)
   const expected_yield_factor = totalInputWeight > 0 ? (parsed.data.expected_final_weight / totalInputWeight) : 1
 
-  // 1. Crear receta
   const { data: recipe, error: recipeError } = await supabase
     .from('recipes')
     .insert({
@@ -54,7 +53,6 @@ export async function createRecipe(data: z.infer<typeof recipeSchema>) {
     return { error: 'Error al crear la receta' }
   }
 
-  // 2. Crear items
   const itemsToInsert = parsed.data.items.map(item => ({
     recipe_id: recipe.id,
     material_id: item.material_id,
@@ -68,7 +66,6 @@ export async function createRecipe(data: z.infer<typeof recipeSchema>) {
 
   if (itemsError) {
     console.error('Error creating recipe items:', itemsError)
-    // Rollback manual podría ser necesario si no hay transacciones en Supabase REST, o idealmente usar una RPC.
     return { error: 'Error al agregar los ingredientes de la receta' }
   }
 

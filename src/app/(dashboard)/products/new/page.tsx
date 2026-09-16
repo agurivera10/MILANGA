@@ -1,12 +1,12 @@
 import { createProduct } from '@/actions/products'
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
 export default async function NewProductPage() {
   // Obtenemos recetas para el select
-  const { data: recipes } = await supabase.from('recipes').select('id, name').order('name')
+  const { data: recipes } = await (await createClient()).from('recipes').select('id, name').order('name')
 
   return (
     <div className="max-w-2xl">

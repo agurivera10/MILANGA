@@ -5,10 +5,11 @@ import { createRecipe } from '@/actions/recipes'
 import Link from 'next/link'
 import { Plus, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/client'
 
 export default function NewRecipePage() {
   const router = useRouter()
+  const supabase = createClient()
   const [materials, setMaterials] = useState<any[]>([])
   const [items, setItems] = useState([{ material_id: '', quantity: 0, unit: 'kg' }])
   const [isSubmitting, setIsSubmitting] = useState(false)

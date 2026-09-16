@@ -1,12 +1,12 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function MaterialsPage() {
-  // En el futuro: await supabase.auth.getUser() para obtener business_id
-  const { data: materials, error } = await supabase
+  // En el futuro: await (await createClient()).auth.getUser() para obtener business_id
+  const { data: materials, error } = await (await createClient())
     .from('materials')
     .select(`
       *,

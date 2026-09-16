@@ -1,11 +1,11 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Plus, Search } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function RecipesPage() {
-  const { data: recipes, error } = await supabase
+  const { data: recipes, error } = await (await createClient())
     .from('recipes')
     .select(`
       *,

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/db/supabase'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { createFixedCost, createVariableCost } from '@/actions/costs'
 import { Plus, Minus } from 'lucide-react'
@@ -18,12 +18,13 @@ const variableTypeLabel: Record<string, string> = {
 }
 
 export default async function CostsPage() {
+  const supabase = await createClient()
   const [{ data: fixedCosts }, { data: variableCosts }] = await Promise.all([
     supabase.from('fixed_costs').select('*').eq('active', true).order('name'),
     supabase.from('variable_costs').select('*').eq('active', true).order('name'),
   ])
 
-  const totalMonthlyFixed = (fixedCosts || []).reduce((acc, c) => {
+  const totalMonthlyFixed = (fixedCosts || []).reduce((acc: number, c: any) => {
     const monthly =
       c.periodicity === 'annual' ? c.amount / 12 :
       c.periodicity === 'weekly' ? c.amount * 4.33 :
@@ -70,7 +71,7 @@ export default async function CostsPage() {
                   </td>
                 </tr>
               ) : (
-                fixedCosts.map((c) => {
+                fixedCosts.map((c: any) => {
                   const monthly =
                     c.periodicity === 'annual' ? c.amount / 12 :
                     c.periodicity === 'weekly' ? c.amount * 4.33 :
@@ -150,7 +151,7 @@ export default async function CostsPage() {
                   </td>
                 </tr>
               ) : (
-                variableCosts.map((c) => (
+                variableCosts.map((c: any) => (
                   <tr key={c.id}>
                     <td className="whitespace-nowrap py-3 pl-4 pr-3 text-sm font-medium text-zinc-900 sm:pl-6">{c.name}</td>
                     <td className="whitespace-nowrap px-3 py-3 text-sm text-zinc-500">{variableTypeLabel[c.type] ?? c.type}</td>
