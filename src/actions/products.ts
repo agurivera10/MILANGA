@@ -12,7 +12,7 @@ const productSchema = z.object({
   sku: z.string().optional()
 })
 
-export async function createProduct(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createProduct(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = productSchema.safeParse(data)
 

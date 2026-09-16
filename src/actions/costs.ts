@@ -11,7 +11,7 @@ const fixedCostSchema = z.object({
   periodicity: z.enum(['monthly', 'weekly', 'annual']).default('monthly'),
 })
 
-export async function createFixedCost(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createFixedCost(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = fixedCostSchema.safeParse(data)
 
@@ -41,7 +41,7 @@ const variableCostSchema = z.object({
   amount: z.coerce.number().min(0, 'El monto no puede ser negativo'),
 })
 
-export async function createVariableCost(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createVariableCost(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = variableCostSchema.safeParse(data)
 

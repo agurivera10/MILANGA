@@ -11,7 +11,7 @@ const supplierSchema = z.object({
   payment_terms: z.string().optional(),
 })
 
-export async function createSupplier(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createSupplier(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = supplierSchema.safeParse(data)
 

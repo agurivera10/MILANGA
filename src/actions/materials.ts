@@ -15,7 +15,7 @@ const materialSchema = z.object({
   expected_yield: z.coerce.number().min(0.01).max(1, 'El rendimiento debe ser entre 0.01 y 1 (1%-100%)')
 })
 
-export async function createMaterial(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createMaterial(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = materialSchema.safeParse(data)
 

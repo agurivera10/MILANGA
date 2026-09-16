@@ -11,7 +11,7 @@ const channelSchema = z.object({
   fee_fixed: z.coerce.number().min(0).default(0),
 })
 
-export async function createChannel(_prevState: unknown, formData: FormData): Promise<void> {
+export async function createChannel(formData: FormData): Promise<void> {
   const data = Object.fromEntries(formData.entries())
   const parsed = channelSchema.safeParse(data)
 
