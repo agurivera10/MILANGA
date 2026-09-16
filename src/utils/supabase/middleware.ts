@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/register')
 
   // Protect all dashboard routes
-  if (!user && !isAuthRoute && request.nextUrl.pathname !== '/') {
+  if (!user && !isAuthRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
