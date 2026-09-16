@@ -1,6 +1,8 @@
 import { createSupplier } from '@/actions/suppliers'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewSupplierPage() {
   return (
     <div className="max-w-2xl">

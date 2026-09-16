@@ -1,6 +1,8 @@
 import { createChannel } from '@/actions/channels'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewChannelPage() {
   return (
     <div className="max-w-2xl">

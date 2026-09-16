@@ -6,9 +6,11 @@ import {
   BookOpen,
   Tag,
   LineChart,
-  Settings,
   DollarSign,
-  Briefcase
+  Briefcase,
+  Factory,
+  ShoppingBag,
+  LogOut
 } from 'lucide-react'
 
 const navigation = [
@@ -17,10 +19,11 @@ const navigation = [
   { name: 'Proveedores', href: '/suppliers', icon: Truck },
   { name: 'Recetas', href: '/recipes', icon: BookOpen },
   { name: 'Productos', href: '/products', icon: Tag },
+  { name: 'Producción', href: '/production', icon: Factory },
   { name: 'Pricing', href: '/pricing', icon: DollarSign },
   { name: 'Laboratorio', href: '/lab', icon: LineChart },
   { name: 'Costos', href: '/costs', icon: Briefcase },
-  { name: 'Configuración', href: '/settings', icon: Settings },
+  { name: 'Canales', href: '/channels', icon: ShoppingBag },
 ]
 
 export function Sidebar() {
@@ -49,6 +52,18 @@ export function Sidebar() {
             </Link>
           ))}
         </nav>
+      </div>
+
+      <div className="border-t border-zinc-100 p-3">
+        <form action="/api/logout" method="post">
+          <button
+            type="submit"
+            className="group flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+          >
+            <LogOut className="mr-3 h-5 w-5 flex-shrink-0 text-zinc-400 group-hover:text-zinc-600 transition-colors" />
+            Cerrar Sesión
+          </button>
+        </form>
       </div>
     </div>
   )
