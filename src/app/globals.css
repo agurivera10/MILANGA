@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Brand tokens - Milanga Cost Lab */
+  --brand: #18181b;          /* zinc-900 - color principal de acción */
+  --brand-hover: #27272a;    /* zinc-800 */
+  --brand-muted: #3f3f46;    /* zinc-700 */
+  --success: #16a34a;        /* green-600 */
+  --warning: #d97706;        /* amber-600 */
+  --danger: #dc2626;         /* red-600 */
+  --surface: #ffffff;
+  --border: #e4e4e7;         /* zinc-200 */
+  --text-primary: #18181b;   /* zinc-900 */
+  --text-secondary: #71717a; /* zinc-500 */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Base styles */
+html {
+  -webkit-text-size-adjust: 100%;
+  font-feature-settings: "cv11", "ss01";
+  font-variation-settings: "opsz" 32;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar suave */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+/* Focus ring accesible */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Transiciones suaves en links y botones */
+a, button {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
