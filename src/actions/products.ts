@@ -39,3 +39,35 @@ export async function createProduct(formData: FormData): Promise<void> {
   revalidatePath('/products')
   redirect('/products')
 }
+
+export async function updateProduct(formData: FormData): Promise<void> {
+  const data = Object.fromEntries(formData.entries())
+  const id = data.id as string
+  const parsed = productSchema.safeParse(data)
+
+  if (!parsed.success || !id) {
+    console.error('Validation error:', parsed?.error?.format())
+    redirect(`/products/${id}?error=invalid`)
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const business_id = user.id
+
+  const { error } = await supabase
+    .from('products')
+    .update(parsed.data)
+    .eq('id', id)
+    .eq('business_id', business_id)
+
+  if (error) {
+    console.error('Error updating product:', error)
+    redirect(`/products/${id}?error=db`)
+  }
+
+  revalidatePath('/products')
+  redirect('/products')
+}
+
