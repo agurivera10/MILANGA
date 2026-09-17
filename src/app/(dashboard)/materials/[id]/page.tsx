@@ -5,33 +5,25 @@ import { updateMaterial } from '@/actions/materials'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditMaterialPage({ params }: { params: { id: string } }) {
+export default async function EditMaterialPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  // Resolve business_id from business_members
-  const { data: member } = await supabase
-    .from('business_members')
-    .select('business_id')
-    .eq('user_id', user.id)
-    .single()
-
-  const business_id = member?.business_id ?? user.id
-
-
-  // Fetch the material
+  // Fetch the material - RLS handles security, business_id = user.id per trigger
   const { data: material, error } = await supabase
     .from('materials')
     .select('*')
-    .eq('id', params.id)
-    .eq('business_id', business_id)
+    .eq('id', id)
+    .eq('business_id', user.id)
     .single()
 
   if (error || !material) {
     notFound()
   }
+
 
   return (
     <div className="max-w-2xl">

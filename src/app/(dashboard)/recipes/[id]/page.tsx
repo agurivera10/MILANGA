@@ -5,22 +5,14 @@ import { ArrowLeft, Package2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-export default async function RecipeDetailPage({ params }: { params: { id: string } }) {
+export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  // Resolve business_id from business_members
-  const { data: member } = await supabase
-    .from('business_members')
-    .select('business_id')
-    .eq('user_id', user.id)
-    .single()
-
-  const business_id = member?.business_id ?? user.id
-
-  // Fetch recipe with its items and each item's material info
+  // Fetch recipe - business_id = user.id per trigger; RLS also enforces access
   const { data: recipe, error } = await supabase
     .from('recipes')
     .select(`
@@ -40,9 +32,10 @@ export default async function RecipeDetailPage({ params }: { params: { id: strin
         )
       )
     `)
-    .eq('id', params.id)
-    .eq('business_id', business_id)
+    .eq('id', id)
+    .eq('business_id', user.id)
     .single()
+
 
 
   if (error || !recipe) {
