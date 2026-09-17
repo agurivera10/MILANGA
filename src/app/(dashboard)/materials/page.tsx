@@ -92,14 +92,23 @@ export default async function MaterialsPage() {
                       {material.category || 'General'}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    ${material.current_price} por {material.presentation_quantity} {material.presentation_unit}
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-zinc-700">
+                    <span className="font-semibold text-zinc-900">
+                      ${material.current_price.toLocaleString('es-AR')}
+                    </span>{' '}
+                    <span className="text-zinc-400 text-xs">/ {material.presentation_unit}</span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-zinc-900">
-                    ${(material.current_price / material.presentation_quantity).toFixed(2)} / {material.base_unit}
+                  <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-emerald-700">
+                    ${(material.current_price / material.presentation_quantity).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-zinc-400 text-xs">/ {material.base_unit}</span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-zinc-500">
-                    {material.expected_yield * 100}%
+                    {material.expected_yield < 1 ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700">
+                        {(material.expected_yield * 100).toFixed(0)}% rinde
+                      </span>
+                    ) : (
+                      <span className="text-xs text-zinc-400">100% rinde</span>
+                    )}
                   </td>
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <Link href={`/materials/${material.id}`} className="text-zinc-600 hover:text-zinc-900">
