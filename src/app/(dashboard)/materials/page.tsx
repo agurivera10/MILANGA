@@ -8,11 +8,12 @@ export default async function MaterialsPage() {
   // En el futuro: await (await createClient()).auth.getUser() para obtener business_id
   const { data: materials, error } = await (await createClient())
     .from('materials')
-    .select(`
-      *,
-      suppliers ( name )
-    `)
+    .select('*')
     .order('name')
+    
+  if (error) {
+    console.error("Error fetching materials:", error)
+  }
 
   return (
     <div className="space-y-6">
