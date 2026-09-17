@@ -146,43 +146,47 @@ export default async function SupplierDetailPage({ params }: { params: Promise<{
               <div className="bg-zinc-50 px-6 py-2 border-y border-zinc-100">
                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">{category}</p>
               </div>
-              <table className="min-w-full">
+              <table className="min-w-full table-fixed">
+                <colgroup>
+                  <col className="w-[35%]" />
+                  <col className="w-[22%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[10%]" />
+                </colgroup>
                 <tbody className="divide-y divide-zinc-100">
                   {mats.map((mat: any) => {
                     const pricePerUnit = mat.current_price / mat.presentation_quantity
                     const adjustedPrice = pricePerUnit / mat.expected_yield
                     return (
                       <tr key={mat.id} className="hover:bg-zinc-50">
-                        <td className="py-4 pl-6 pr-3">
+                        <td className="py-3.5 pl-6 pr-3">
                           <p className="text-sm font-medium text-zinc-900">{mat.name}</p>
                           <p className="text-xs text-zinc-400">{mat.presentation_unit}</p>
                         </td>
-                        <td className="px-3 py-4 text-sm text-zinc-600 text-right">
+                        <td className="px-3 py-3.5 text-sm text-right">
                           <span className="font-semibold text-zinc-900">
                             ${mat.current_price.toLocaleString('es-AR')}
                           </span>
                           <span className="text-zinc-400 text-xs"> / {mat.presentation_unit}</span>
                         </td>
-                        <td className="px-3 py-4 text-sm text-right">
+                        <td className="px-3 py-3.5 text-sm text-right">
                           <span className="font-semibold text-emerald-700">
                             ${pricePerUnit.toLocaleString('es-AR', { maximumFractionDigits: 2 })}
                           </span>
                           <span className="text-zinc-400 text-xs">/{mat.base_unit}</span>
                         </td>
-                        <td className="px-3 py-4 text-sm text-right">
+                        <td className="px-3 py-3.5 text-sm text-right">
                           {mat.expected_yield < 1 ? (
-                            <div>
-                              <span className="font-semibold text-amber-600">
-                                ${adjustedPrice.toLocaleString('es-AR', { maximumFractionDigits: 2 })}
-                              </span>
-                              <span className="text-zinc-400 text-xs">/{mat.base_unit} (ajustado)</span>
-                            </div>
+                            <span className="text-xs font-medium text-amber-600">
+                              {(mat.expected_yield * 100).toFixed(0)}% rinde
+                            </span>
                           ) : (
-                            <span className="text-zinc-400 text-xs">100% rinde</span>
+                            <span className="text-xs text-zinc-400">100% rinde</span>
                           )}
                         </td>
-                        <td className="py-4 pl-3 pr-6 text-right">
-                          <Link href={`/materials/${mat.id}`} className="text-xs text-zinc-500 hover:text-zinc-900 underline">
+                        <td className="py-3.5 pl-3 pr-6 text-right">
+                          <Link href={`/materials/${mat.id}`} className="text-xs text-zinc-500 hover:text-zinc-900 underline whitespace-nowrap">
                             Editar precio
                           </Link>
                         </td>
