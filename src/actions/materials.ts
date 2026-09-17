@@ -42,3 +42,35 @@ export async function createMaterial(formData: FormData): Promise<void> {
   revalidatePath('/materials')
   redirect('/materials')
 }
+
+export async function updateMaterial(formData: FormData): Promise<void> {
+  const data = Object.fromEntries(formData.entries())
+  const id = data.id as string
+  const parsed = materialSchema.safeParse(data)
+
+  if (!parsed.success || !id) {
+    console.error('Validation error:', parsed?.error?.format())
+    redirect(`/materials/${id}?error=invalid`)
+  }
+
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const business_id = user.id
+
+  const { error } = await supabase
+    .from('materials')
+    .update(parsed.data)
+    .eq('id', id)
+    .eq('business_id', business_id)
+
+  if (error) {
+    console.error('Error updating material:', error)
+    redirect(`/materials/${id}?error=db`)
+  }
+
+  revalidatePath('/materials')
+  redirect('/materials')
+}
+
