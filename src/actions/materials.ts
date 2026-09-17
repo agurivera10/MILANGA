@@ -57,7 +57,13 @@ export async function updateMaterial(formData: FormData): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const business_id = user.id
+  // Resolve business_id
+  const { data: member } = await supabase
+    .from('business_members')
+    .select('business_id')
+    .eq('user_id', user.id)
+    .single()
+  const business_id = member?.business_id ?? user.id
 
   const { error } = await supabase
     .from('materials')

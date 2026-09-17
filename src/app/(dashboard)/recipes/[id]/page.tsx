@@ -11,6 +11,15 @@ export default async function RecipeDetailPage({ params }: { params: { id: strin
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
+  // Resolve business_id from business_members
+  const { data: member } = await supabase
+    .from('business_members')
+    .select('business_id')
+    .eq('user_id', user.id)
+    .single()
+
+  const business_id = member?.business_id ?? user.id
+
   // Fetch recipe with its items and each item's material info
   const { data: recipe, error } = await supabase
     .from('recipes')
@@ -32,8 +41,9 @@ export default async function RecipeDetailPage({ params }: { params: { id: strin
       )
     `)
     .eq('id', params.id)
-    .eq('business_id', user.id)
+    .eq('business_id', business_id)
     .single()
+
 
   if (error || !recipe) {
     notFound()
