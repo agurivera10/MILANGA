@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { updateMaterial } from '@/actions/materials'
+import { setActivePresentation } from '@/actions/presentations'
+import { CheckCircle2, Circle } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +14,7 @@ export default async function EditMaterialPage({ params }: { params: Promise<{ i
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  // Fetch the material - RLS handles security, business_id = user.id per trigger
+  // Fetch the material
   const { data: material, error } = await supabase
     .from('materials')
     .select('*')
@@ -20,10 +22,16 @@ export default async function EditMaterialPage({ params }: { params: Promise<{ i
     .eq('business_id', user.id)
     .single()
 
-  if (error || !material) {
-    notFound()
-  }
+  if (error || !material) notFound()
 
+  // Fetch presentations if they exist for this material
+  const { data: presentations } = await supabase
+    .from('material_presentations')
+    .select('*')
+    .eq('material_id', id)
+    .order('price', { ascending: true })
+
+  const hasPresentations = presentations && presentations.length > 0
 
   return (
     <div className="max-w-2xl">
@@ -177,6 +185,83 @@ export default async function EditMaterialPage({ params }: { params: Promise<{ i
           </button>
         </div>
       </form>
+
+      {/* ── Presentaciones de Compra ── */}
+      {hasPresentations && (
+        <div className="mt-8 bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-zinc-200">
+            <h2 className="text-base font-semibold text-zinc-900">Presentaciones de Compra</h2>
+            <p className="text-sm text-zinc-500 mt-0.5">
+              Activá la presentación que compraste hoy — el costo de la receta se recalcula automáticamente.
+            </p>
+          </div>
+          <table className="min-w-full table-fixed">
+            <colgroup>
+              <col className="w-[30%]" />
+              <col className="w-[22%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[12%]" />
+            </colgroup>
+            <thead className="bg-zinc-50">
+              <tr>
+                <th className="py-3 pl-6 pr-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Presentación</th>
+                <th className="px-3 py-3 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide">Precio</th>
+                <th className="px-3 py-3 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide">Costo/kg</th>
+                <th className="px-3 py-3 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado</th>
+                <th className="py-3 pl-3 pr-6 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acción</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100">
+              {presentations!.map((pres: any) => {
+                const pricePerUnit = pres.price / pres.presentation_quantity
+                return (
+                  <tr key={pres.id} className={pres.is_active ? 'bg-emerald-50' : 'hover:bg-zinc-50'}>
+                    <td className="py-4 pl-6 pr-3">
+                      <p className="text-sm font-medium text-zinc-900">{pres.name}</p>
+                      <p className="text-xs text-zinc-400">{pres.presentation_quantity} kg</p>
+                    </td>
+                    <td className="px-3 py-4 text-sm text-right font-semibold text-zinc-900">
+                      ${pres.price.toLocaleString('es-AR')}
+                    </td>
+                    <td className="px-3 py-4 text-sm text-right font-semibold text-emerald-700">
+                      ${pricePerUnit.toLocaleString('es-AR', { maximumFractionDigits: 2 })}/kg
+                    </td>
+                    <td className="px-3 py-4 text-right">
+                      {pres.is_active ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Activa
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs text-zinc-400">
+                          <Circle className="h-3.5 w-3.5" />
+                          Inactiva
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 pl-3 pr-6 text-right">
+                      {!pres.is_active && (
+                        <form action={setActivePresentation}>
+                          <input type="hidden" name="materialId" value={material.id} />
+                          <input type="hidden" name="presentationId" value={pres.id} />
+                          <button
+                            type="submit"
+                            className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 transition-colors"
+                          >
+                            Activar
+                          </button>
+                        </form>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
     </div>
   )
 }
